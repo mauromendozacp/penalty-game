@@ -3,10 +3,13 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private PlayerInputController inputController;
-    [SerializeField] private SwipeController swipeInputSystem;
+    [SerializeField] private SwipeController swipeController;
 
     private void Start()
     {
-        swipeInputSystem.Init(inputController);
+        inputController.onStartClick = () => swipeController.StartSwipe();
+        inputController.onEndClick = () => swipeController.EndSwipe();
+
+        swipeController.onGetMousePosition = () => inputController.GetMousePosition();
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class SwipeController : MonoBehaviour
@@ -7,33 +8,36 @@ public class SwipeController : MonoBehaviour
     [SerializeField] private float maxSwipeDistance = 300f;
     [SerializeField] private float minForce = 5f;
     [SerializeField] private float maxForce = 30f;
+    [SerializeField] private LayerMask ballLayer = default;
 
-    private Vector2 startPos;
-    private float startTime;
+    private Vector2 startPos = Vector2.zero;
+    private float startTime = 0f;
     private bool isSwiping = false;
 
-    private PlayerInputController inputController;
+    public Func<Vector2> onGetMousePosition = null;
 
-    public void Init(PlayerInputController inputController)
+    public void StartSwipe()
     {
-        this.inputController = inputController;
-        this.inputController.onStartClick = () => StartSwipe();
-        this.inputController.onEndClick = () => EndSwipe();
+        Vector2 screenPos = GetMousePosition();
+        Ray ray = Camera.main.ScreenPointToRay(screenPos);
+
+        if (Physics.Raycast(ray, out RaycastHit hit))
+        {
+            if (Utils.CheckLayerInMask(ballLayer, hit.collider.gameObject.layer))
+            {
+                isSwiping = true;
+                startPos = GetMousePosition();
+                startTime = Time.time;
+            }
+        }
     }
 
-    private void StartSwipe()
-    {
-        isSwiping = true;
-        startPos = inputController.GetMousePosition();
-        startTime = Time.time;
-    }
-
-    private void EndSwipe()
+    public void EndSwipe()
     {
         if (!isSwiping) return;
 
         isSwiping = false;
-        Vector2 endPos = inputController.GetMousePosition();
+        Vector2 endPos = GetMousePosition();
         float swipeDistance = endPos.y - startPos.y;
         float swipeTime = Time.time - startTime;
 
@@ -45,5 +49,10 @@ public class SwipeController : MonoBehaviour
 
             Debug.Log($"[Input System] Swipe Force: {force} | Distancia: {swipeDistance} | Tiempo: {swipeTime}");
         }
+    }
+
+    private Vector2 GetMousePosition()
+    {
+        return onGetMousePosition != null ? onGetMousePosition.Invoke() : Vector2.zero;
     }
 }

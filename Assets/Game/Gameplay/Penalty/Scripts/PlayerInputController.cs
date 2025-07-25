@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerInputController : MonoBehaviour
 {
@@ -12,8 +13,26 @@ public class PlayerInputController : MonoBehaviour
     {
         inputActions = new InputSystemActions();
 
-        inputActions.UI.Click.started += ctx => StartClick();
-        inputActions.UI.Click.canceled += ctx => EndClick();
+        inputActions.UI.Click.started += StartClick;
+        inputActions.UI.Click.canceled += EndClick;
+    }
+
+    private void OnDestroy()
+    {
+        if (inputActions == null) return;
+
+        inputActions.UI.Click.started += StartClick;
+        inputActions.UI.Click.canceled += EndClick;
+    }
+
+    void OnEnable()
+    {
+        inputActions?.Enable();
+    }
+
+    void OnDisable()
+    {
+        inputActions?.Disable();
     }
 
     public Vector2 GetMousePosition()
@@ -21,12 +40,12 @@ public class PlayerInputController : MonoBehaviour
         return inputActions.UI.Point.ReadValue<Vector2>();
     }
 
-    private void StartClick()
+    private void StartClick(InputAction.CallbackContext ctx)
     {
         onStartClick?.Invoke();
     }
 
-    private void EndClick()
+    private void EndClick(InputAction.CallbackContext ctx)
     {
         onEndClick?.Invoke();
     }

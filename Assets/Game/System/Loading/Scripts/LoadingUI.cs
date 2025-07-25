@@ -6,7 +6,7 @@ using UnityEngine;
 public class LoadingUI : MonoBehaviour
 {
     [SerializeField] private CanvasGroup canvasGroup = null;
-    [SerializeField] private float lerpTime = 0f;
+    [SerializeField] private float lerpTime = 1f;
 
     private void Awake()
     {
