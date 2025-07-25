@@ -14,9 +14,11 @@ public class GameManager : MonoBehaviourSingleton<GameManager>
     [Header("Manager References")]
     [SerializeField] private LoadingManager loadingManager = null;
     [SerializeField] private AudioManager audioManager = null;
+    [SerializeField] private ApiClientManager apiClientManager = null;
 
     public LoadingManager LoadingManager => loadingManager;
     public AudioManager AudioManager => audioManager;
+    public ApiClientManager ApiClientManager => apiClientManager;
 
     public override void Awake()
     {
